@@ -28,6 +28,7 @@ public class MenuManager : MonoBehaviour
 
     public void LoadLevel(int score)
     {
+        DataManager.Instance.SetLevelData(score);
         SceneManager.LoadScene("Game");
     }
 

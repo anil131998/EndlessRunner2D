@@ -263,8 +263,6 @@ MonoBehaviour:
   slideDuration: 1
   slideColliderReductiom: 2
   damageAnimationTime: 0.5
-  cameraShakeDuration: 0.5
-  cameraShakeMagnitude: 1
 --- !u!95 &5096553810942710452
 Animator:
   serializedVersion: 5
