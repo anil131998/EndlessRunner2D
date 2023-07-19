@@ -4,10 +4,13 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 public class GamePlayManager : MonoBehaviour
 {
-    
+    public static event UnityAction gamePaused;
+    public static event UnityAction gameResumed;
+
     [SerializeField] private TMP_Text score_text;
     [SerializeField] private TMP_Text coin_text;
     [SerializeField] private Image health_bar;
@@ -15,11 +18,12 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField] private GameObject VictoryPanel;
     [SerializeField] private GameObject DefeatPanel;
 
+    [SerializeField] private int totalHealth = 4;
     private float score = 0;
     private int coin = 0;
     private int currentHealth; 
-    private int totalHealth = 4;
     private int scoreToBeat = 0;
+    private bool isPaused = false;
 
     private void Awake()
     {
@@ -27,6 +31,7 @@ public class GamePlayManager : MonoBehaviour
         score = 0;
         coin = 0;
         scoreToBeat = DataManager.Instance.scoreForCurrentLevel;
+        isPaused = false;
 
         CloseDefeatPanel();
         CloseVictoryPanel();
@@ -35,12 +40,15 @@ public class GamePlayManager : MonoBehaviour
 
     private void Update()
     {
-        score += Time.deltaTime;
-        score_text.text = "Distance : " + (int)score + " / " + scoreToBeat;
-
-        if((int)score >= scoreToBeat)
+        if (!isPaused)
         {
-            LevelWon();
+            score += Time.deltaTime;
+            score_text.text = "Distance : " + (int)score + " / " + scoreToBeat;
+
+            if ((int)score >= scoreToBeat)
+            {
+                LevelWon();
+            }
         }
     }
 
@@ -63,13 +71,13 @@ public class GamePlayManager : MonoBehaviour
 
     private void LevelWon()
     {
-        Time.timeScale = 0;
+        PauseGame();
         OpenVictoryPanel();
     }
 
     private void LevelLost()
     {
-        Time.timeScale = 0;
+        PauseGame();
         OpenDefeatPanel();
     }
 
@@ -94,14 +102,25 @@ public class GamePlayManager : MonoBehaviour
     public void OpenDefeatPanel() => DefeatPanel.SetActive(true);
     public void CloseDefeatPanel() => DefeatPanel.SetActive(false);
 
+    
+    private void PauseGame()
+    {
+        isPaused = true;
+        gamePaused?.Invoke();
+    }
+
+    private void ResumeGame()
+    {
+        isPaused = false;
+        gameResumed?.Invoke();
+    }
+
     public void LoadMenu()
     {
-        Time.timeScale = 1;
         SceneManager.LoadScene("Menu");
     }
     public void RestartLevel()
     {
-        Time.timeScale = 1;
         SceneManager.LoadScene("Game");
     }
 

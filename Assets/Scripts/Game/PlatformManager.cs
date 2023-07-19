@@ -10,6 +10,12 @@ public class PlatformManager : MonoBehaviour
 
     private Transform playerTransform; // Reference to the player's transform
     private List<GameObject> platforms = new List<GameObject>(); // List to track the spawned platforms
+    private GameStateChecker sC;
+
+    private void Awake()
+    {
+        sC = GetComponent<GameStateChecker>();
+    }
 
     private void Start()
     {

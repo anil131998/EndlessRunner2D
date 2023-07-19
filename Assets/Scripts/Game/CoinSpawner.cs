@@ -11,8 +11,14 @@ public class CoinSpawner : MonoBehaviour
     [SerializeField] private float deSpawnDistance = 10f;
 
     private List<GameObject> coins = new List<GameObject>();
-    private float timer = 0f;
+    private GameStateChecker sC;
     private Transform playerTransform;
+    private float timer = 0f;
+
+    private void Awake()
+    {
+        sC = GetComponent<GameStateChecker>();
+    }
 
     private void Start()
     {
@@ -23,7 +29,7 @@ public class CoinSpawner : MonoBehaviour
     {
         timer -= Time.deltaTime;
 
-        if (timer <= 0)
+        if (timer <= 0 && !sC.isPaused)
         {
             SpawnCoin();
             timer = Random.Range(spawnMinInterval, spawnMaxInterval);
@@ -49,4 +55,5 @@ public class CoinSpawner : MonoBehaviour
         coins.Remove(Coin);
         Destroy(Coin);
     }
+
 }

@@ -2,12 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(GameStateChecker))]
 public class PlatformMovement : MonoBehaviour
 {
-    [SerializeField] private float movespeed = 10f;
+    private GameStateChecker gC;
+
+    private void Awake()
+    {
+        gC = GetComponent<GameStateChecker>();
+    }
 
     void Update()
     {
-        transform.Translate(Vector2.left * movespeed * Time.deltaTime);    
+        if(!gC.isPaused)
+            transform.Translate(Vector2.left * DataManager.Instance.levelMoveSpeed * Time.deltaTime);    
     }
+
 }

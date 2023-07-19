@@ -7,6 +7,14 @@ public class Obstacle : MonoBehaviour
 {
     public static event UnityAction playerHitObstacle;
 
+    [SerializeField] private float obstacleCooldown;
+    public float obstacleCD { get; private set; }
+
+    private void Awake()
+    {
+        obstacleCD = obstacleCooldown;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))

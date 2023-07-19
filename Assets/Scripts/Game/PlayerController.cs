@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,9 +9,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float slideDuration = 1f;
     [SerializeField] private float slideColliderReductiom = 2f;
     [SerializeField] private float damageAnimationTime = 0.5f;
+    [SerializeField] private float airDashDuration = 0.5f;
 
     private KeyCode JumpKey = KeyCode.W;
     private KeyCode slideKey = KeyCode.S;
+    private KeyCode airDashKey = KeyCode.D;
     private BoxCollider2D boxCollider;
     private Rigidbody2D rb;
     private Animator animator;
@@ -18,7 +21,9 @@ public class PlayerController : MonoBehaviour
 
     private bool isJumping = false;
     private bool isSliding = false;
+    private bool isDashing = false;
     private float slideTimer = 0f;
+    private bool isPaused = false;
 
     void Start()
     {
@@ -26,14 +31,22 @@ public class PlayerController : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        isPaused = false;
     }
 
     private void Update()
     {
-        // Check if the slide key is pressed and not currently sliding
-        if (Input.GetKey(slideKey) && !isSliding)
+        if (!isPaused)
         {
-            StartSliding();
+            if (Input.GetKey(slideKey) && !isSliding && !isJumping)
+            {
+                StartSliding();
+            }
+            //airdash
+            if (Input.GetKey(airDashKey) && isJumping && !isPaused && !isDashing)
+            {
+                StartAirDash();
+            }
         }
 
         if (isSliding)
@@ -49,12 +62,12 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Check if the character is jumping
-        if ( Input.GetKey(JumpKey) && !isJumping)
+        if (!isPaused)
         {
-            rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
-            animator.Play("jump");
-            isJumping = true;
+            if (Input.GetKey(JumpKey) && !isJumping)
+            {
+                StartJumping();
+            }
         }
     }
 
@@ -62,12 +75,24 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground") && isJumping)
         {
-            isJumping = false;
-            PlayDefaultAnimation();
+            StopJumping();
         }
     }
 
-    
+    private void StartJumping()
+    {
+        rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+        animator.Play("jump");
+        isJumping = true;
+    }
+
+    private void StopJumping()
+    {
+        isJumping = false;
+        isDashing = false;
+        PlayDefaultAnimation();
+    }
+
     private void StartSliding()
     {
         isSliding = true;
@@ -85,9 +110,35 @@ public class PlayerController : MonoBehaviour
         //animator.SetBool("IsSliding", false);
     }
 
+    private void StartAirDash()
+    {
+        isDashing = true;
+        rb.simulated = false;
+        animator.Play("Slide");
+        StartCoroutine(doAirDash());
+    }
+
+    private IEnumerator doAirDash()
+    {
+        float timer = 0;
+        while (timer < airDashDuration)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        StopAirDash();
+    }
+
+    private void StopAirDash()
+    {
+        rb.velocity = Vector3.zero;
+        rb.simulated = true;
+    }
+
     private void PlayDefaultAnimation()
     {
-        animator.Play("Run");
+        if(!isPaused)
+            animator.Play("Run");
     }
 
     private void PlayerHit()
@@ -107,16 +158,33 @@ public class PlayerController : MonoBehaviour
         spriteRenderer.color = Color.white;
         yield return new WaitForSeconds(damageAnimationTime / 4);
     }
-    
 
+
+    private void GamePaused()
+    {
+        isPaused = true;
+        animator.Play("Idle");
+    }
+
+    private void GameResumed()
+    {
+        isPaused = false;
+        animator.Play("Run");
+    }
 
     private void OnEnable()
     {
         Obstacle.playerHitObstacle += PlayerHit;
+        GamePlayManager.gamePaused += GamePaused;
+        GamePlayManager.gameResumed += GameResumed;
     }
+
+
     private void OnDisable()
     {
         Obstacle.playerHitObstacle -= PlayerHit;
+        GamePlayManager.gamePaused -= GamePaused;
+        GamePlayManager.gameResumed -= GameResumed;
     }
 
 }
