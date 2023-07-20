@@ -54,6 +54,7 @@ public class ObstacleSpawner : MonoBehaviour
         obstacles.Add(newObstacle);
         spawnMinInterval = newObstacle.GetComponent<Obstacle>().obstacleCD;
         animator.Play("attack1");
+        AudioManager.Instance.EnemyAttack();
     }
 
     private void DespawnObstacle(GameObject obstacle)

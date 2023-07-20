@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameStateChecker : MonoBehaviour
 {
     public bool isPaused { get; private set;  }
-
+    
     private void Awake()
     {
         isPaused = false;

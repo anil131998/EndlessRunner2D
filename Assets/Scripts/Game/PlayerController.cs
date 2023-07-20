@@ -83,6 +83,7 @@ public class PlayerController : MonoBehaviour
     {
         rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
         animator.Play("jump");
+        AudioManager.Instance.StartJumping();
         isJumping = true;
     }
 
@@ -97,6 +98,7 @@ public class PlayerController : MonoBehaviour
     {
         isSliding = true;
         animator.Play("Slide");
+        AudioManager.Instance.StartJumping();
         slideTimer = 0f;
         boxCollider.size = new Vector2(boxCollider.size.x, boxCollider.size.y / slideColliderReductiom);
         //animator.SetBool("IsSliding", true);
@@ -115,6 +117,7 @@ public class PlayerController : MonoBehaviour
         isDashing = true;
         rb.simulated = false;
         animator.Play("Slide");
+        AudioManager.Instance.StartJumping();
         StartCoroutine(doAirDash());
     }
 
@@ -137,12 +140,16 @@ public class PlayerController : MonoBehaviour
 
     private void PlayDefaultAnimation()
     {
-        if(!isPaused)
+        if (!isPaused)
+        {
             animator.Play("Run");
+            AudioManager.Instance.PlayRunningAudio();
+        }
     }
 
     private void PlayerHit()
     {
+        AudioManager.Instance.PlayerHit();
         StartCoroutine(PlayerDamaged());
     }
 

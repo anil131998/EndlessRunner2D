@@ -17,6 +17,7 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject VictoryPanel;
     [SerializeField] private GameObject DefeatPanel;
+    [SerializeField] private TMP_Text startCountdown;
 
     [SerializeField] private int totalHealth = 4;
     private float score = 0;
@@ -24,6 +25,8 @@ public class GamePlayManager : MonoBehaviour
     private int currentHealth; 
     private int scoreToBeat = 0;
     private bool isPaused = false;
+    private float coundDown = 3f;
+
 
     private void Awake()
     {
@@ -36,6 +39,27 @@ public class GamePlayManager : MonoBehaviour
         CloseDefeatPanel();
         CloseVictoryPanel();
         ClosePauseMenu();
+    }
+
+    private void Start()
+    {
+        StartCoroutine(StartCountDown());
+    }
+
+    private IEnumerator StartCountDown()
+    {
+        PauseGame();
+        startCountdown.gameObject.SetActive(true);
+        float timer = 0f;
+        while (timer < coundDown)
+        {
+            startCountdown.text = ((int)(coundDown - timer + 1))+"";
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        startCountdown.text = "";
+        startCountdown.gameObject.SetActive(false);
+        ResumeGame();
     }
 
     private void Update()
