@@ -7,12 +7,12 @@ public class DataManager : MonoBehaviour
     public static DataManager Instance;
 
     [SerializeField] private List<int> ScoreForLevel;
-    
+    [SerializeField] private List<int> moveSpeedForLevel;
+
     public int currentLevel { get; private set; }
     public int scoreForCurrentLevel { get; private set; }
     public float levelMoveSpeed { get; private set; }
 
-    public float movespeed = 10f;
 
     private void Awake()
     {
@@ -32,11 +32,7 @@ public class DataManager : MonoBehaviour
     {
         currentLevel = level;
         scoreForCurrentLevel = ScoreForLevel[level - 1];
-        levelMoveSpeed = movespeed; //change this
+        levelMoveSpeed = moveSpeedForLevel[level-1];
     }
 
-    private void Update()
-    {
-        levelMoveSpeed = movespeed;
-    }
 }

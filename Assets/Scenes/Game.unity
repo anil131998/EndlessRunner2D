@@ -7237,7 +7237,7 @@ MonoBehaviour:
   VictoryPanel: {fileID: 1379440757}
   DefeatPanel: {fileID: 31782053}
   startCountdown: {fileID: 1051691695}
-  totalHealth: 1000
+  totalHealth: 4
 --- !u!1 &1747747557
 GameObject:
   m_ObjectHideFlags: 0
