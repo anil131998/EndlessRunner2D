@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float damageAnimationTime = 0.5f;
     [SerializeField] private float airDashDuration = 0.5f;
 
+    [SerializeField] private ParticleSystem particleSys;
+
     private KeyCode JumpKey = KeyCode.W;
     private KeyCode slideKey = KeyCode.S;
     private KeyCode airDashKey = KeyCode.D;
@@ -149,6 +151,7 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerHit()
     {
+        particleSys.Play();
         AudioManager.Instance.PlayerHit();
         StartCoroutine(PlayerDamaged());
     }
